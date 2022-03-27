@@ -1,84 +1,97 @@
 import React, { useState, useEffect } from "react";
+import { useHistory, useParams } from "react-router-dom";
+import fireDb from "../../firebase";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { addDoc, collection, getDocs } from "firebase/firestore";
 import "./AddNewUser.css";
+import Swal from "sweetalert2";
+import newUserValidation from "./AddNewUserValidation";
 
 function AddNewUser() {
-  const initialValues = {
-    empFullName: "",
-    empContactNo: "",
+  const auth = getAuth();
+
+  const empCollection = collection(fireDb, "emp_details");
+
+  const initialState = {
+    empName: "",
+    empContact: "",
     empEmail: "",
     empPassword: "",
     serviceArea: "",
     empAddress: "",
-    empCenter: "",
-    empBday: "",
-    empNic:"",
+    destributionCenter: "",
+    empGender: "",
+    empDOB: "",
+    empNic: "",
     empType: "",
-  };
-  
-  const [fieldValues, setFieldValues] = useState(initialValues);
-  const [formErrors, setFormErrors] = useState({});
-  const [isSubmit, setIsSubmit] = useState(false);
-
-  const [focused, setFocused] = useState(false);
-
-  const handleFocus = (e) => {
-    setFocused(true);
-  }
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFieldValues({ ...fieldValues, [name]: value });
+    empHealthIssues: "",
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setFormErrors(validate(fieldValues));
-    setIsSubmit(true);
-  };
+  const [state, setState] = useState(initialState);
+
+  const [empData, setEmpData] = useState({});
 
   useEffect(() => {
-    console.log(formErrors);
-    if (Object.keys(formErrors).length === 0 && isSubmit) {
-      console.log(fieldValues);
-    }
-  }, [formErrors]);
+    const getEmps = async () => {
+      const data = await getDocs(empCollection);
 
-  const validate = (values) => {
-    const errors = {};
-    // const regex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
+      setEmpData(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
 
-    if (!values.empFullName) {
-      errors.empFullName = "Username cannot be Empty";
-    }
-    if (!values.empContactNo) {
-      errors.empContactNo = "Contact Number is Required";
-    }
-    if (!values.empEmail) {
-      errors.empEmail = "Email is Required";
-    }
-    if (!values.empPassword) {
-      errors.empPassword = "Password is Required";
-    }
-    if (!values.serviceArea) {
-      errors.serviceArea = "Service Area is Required";
-    }
-    if (!values.empAddress) {
-      errors.empAddress = "Permenant Address is Required";
-    }
-    if (!values.empCenter) {
-      errors.empCenter = "Please select a Center";
-    }
-    if (!values.empBday) {
-      errors.empBday = "Date of Birth is Required";
-    }
-    if (!values.empNic) {
-      errors.empNic = "Nic is Required";
-    }
-    if (!values.empType) {
-      errors.empType = "Please Select Employee Type";
-    }
-   
-    return errors;
+      console.log(data);
+    };
+    getEmps();
+    newUserValidation();
+  }, []);
+
+  const {
+    empName,
+    empContact,
+    empEmail,
+    empPassword,
+    serviceArea,
+    empAddress,
+    destributionCenter,
+    empGender,
+    empDOB,
+    empNic,
+    empType,
+    empHealthIssues,
+  } = state;
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setState({ ...state, [name]: value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    await createUserWithEmailAndPassword(
+      auth,
+      state.empEmail,
+      state.empPassword
+    )
+      .then((userCred) => {
+        const user = userCred.user;
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+      });
+
+    await addDoc(collection(fireDb, "emp_details"), state)
+      .then((user) => {
+        const newUser = user.id;
+        Swal.fire("New Employee Created Successfully");
+
+        setState({});
+      })
+      .catch((err) => {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Something went wrong!",
+        });
+      });
   };
 
   return (
@@ -90,37 +103,39 @@ function AddNewUser() {
               <h4 className="card__Heading">New User Registration</h4>
             </div>
             <div className="card__Form">
-              <form className="row g-4" onSubmit={handleSubmit} id="form">
+              <form
+                className="row g-4"
+                onSubmit={handleSubmit}
+                id="form_AddNewUser"
+              >
                 <div className="form-group col-md-6">
-                  <label for="empFullName" className="form-label">
+                  <label for="empName" className="form-label">
                     Employee Name
                   </label>
                   <input
                     type="text"
                     className="form-control"
-                    name="empFullName"
-                    onBlur={handleFocus}
-                    focused={focused.toString()}
-                    value={fieldValues.empFullName}
-                    onChange={handleChange}
-                    id="empFullName"
+                    name="empName"
+                    value={state.empName}
+                    onChange={handleInputChange}
+                    id="empName"
+                    placeholder="Employee Name"
                   />
-                  <span className="error">{formErrors.empFullName}</span>
                 </div>
 
                 <div className="form-group col-md-5">
-                  <label for="empContactNo" className="form-label">
+                  <label for="empContact" className="form-label">
                     Contact Number
                   </label>
                   <input
                     type="text"
                     className="form-control"
-                    name="empContactNo"
-                    value={fieldValues.empContactNo}
-                    onChange={handleChange}
-                    id="empContactNo"
+                    name="empContact"
+                    placeholder="Contact Number"
+                    value={state.empContact}
+                    onChange={handleInputChange}
+                    id="empContact"
                   />
-                  <span className="error">{formErrors.empContactNo}</span>
                 </div>
 
                 <div className="form-group col-md-5">
@@ -128,16 +143,14 @@ function AddNewUser() {
                     Email Address
                   </label>
                   <input
-                    type="text"
+                    type="email"
                     className="form-control"
                     name="empEmail"
-                    onBlur={handleFocus}
-                    focused={focused.toString()}
-                    value={fieldValues.empEmail}
-                    onChange={handleChange}
+                    value={state.empEmail}
+                    onChange={handleInputChange}
+                    placeholder="Example@abc.com"
                     id="empEmail"
                   />
-                  <span className="error">{formErrors.empEmail}</span>
                 </div>
 
                 <div className="form-group col-md-3">
@@ -145,14 +158,14 @@ function AddNewUser() {
                     Password
                   </label>
                   <input
-                    type="text"
+                    type="password"
                     className="form-control"
                     name="empPassword"
-                    value={fieldValues.empPassword}
-                    onChange={handleChange}
+                    value={state.empPassword}
+                    placeholder="Password"
+                    onChange={handleInputChange}
                     id="empPassword"
                   />
-                  <span className="error">{formErrors.empPassword}</span>
                 </div>
 
                 <div className="form-group col-md-3">
@@ -162,8 +175,8 @@ function AddNewUser() {
                   <select
                     className="form-select"
                     name="serviceArea"
-                    value={fieldValues.serviceArea}
-                    onChange={handleChange}
+                    value={state.serviceArea}
+                    onChange={handleInputChange}
                     id="serviceArea"
                   >
                     <option selected disabled>
@@ -175,7 +188,6 @@ function AddNewUser() {
                     <option>Matara</option>
                     <option>Hambantota</option>
                   </select>
-                  <span className="error">{formErrors.serviceArea}</span>
                 </div>
 
                 <div className="form-group col-md-8">
@@ -185,23 +197,22 @@ function AddNewUser() {
                   <textarea
                     className="form-control"
                     name="empAddress"
-                    value={fieldValues.empAddress}
-                    onChange={handleChange}
+                    value={state.empAddress}
+                    onChange={handleInputChange}
                     id="empAddress"
                   ></textarea>
-                  <span className="error">{formErrors.empAddress}</span>
                 </div>
 
                 <div className="form-group col-md-3">
-                  <label for="empCenter" className="form-label">
+                  <label for="destributionCenter" className="form-label">
                     Destribution Center
                   </label>
                   <select
                     className="form-select"
-                    name="empCenter"
-                    value={fieldValues.empCenter}
-                    onChange={handleChange}
-                    id="empCenter"
+                    name="destributionCenter"
+                    value={state.destributionCenter}
+                    onChange={handleInputChange}
+                    id="destributionCenter"
                   >
                     <option selected disabled>
                       -- Select Center --
@@ -212,7 +223,6 @@ function AddNewUser() {
                     <option>Matara</option>
                     <option>Hambantota</option>
                   </select>
-                  <span className="error">{formErrors.empCenter}</span>
                 </div>
 
                 <div className="form-group col-md-2 div__Gender">
@@ -226,6 +236,9 @@ function AddNewUser() {
                     name="empGender"
                     id="empGenderMale"
                     selected
+                    value="Male"
+                    checked={state.empGender === "Male"}
+                    onChange={handleInputChange}
                   />
                   <label className="form-label male">Male</label>
 
@@ -234,26 +247,26 @@ function AddNewUser() {
                     className="form-check-input"
                     name="empGender"
                     id="empGenderFemale"
+                    value="Female"
+                    checked={state.empGender === "Female"}
+                    onChange={handleInputChange}
                   />
                   <label className="form-label female">Female</label>
                 </div>
 
                 <div className="form-group col-md-3 div__Birth">
-                  <label for="empBday" className="form-label">
+                  <label for="empDOB" className="form-label">
                     Date of Birth
                   </label>
                   <input
                     type="date"
                     className="form-control"
-                    value={fieldValues.empBday}
-                    onChange={handleChange}
-                    name="empBday"
-                    id="empBday"
+                    value={state.empDOB}
+                    onChange={handleInputChange}
+                    name="empDOB"
+                    id="empDOB"
                   />
-                  <span className="error">{formErrors.empBday}</span>
                 </div>
-
-                
 
                 <div className="form-group col-md-3">
                   <label for="empNic" className="form-label">
@@ -263,13 +276,10 @@ function AddNewUser() {
                     type="text"
                     className="form-control"
                     name="empNic"
-                    onBlur={handleFocus}
-                    focused={focused.toString()}
-                    value={fieldValues.empNic}
-                    onChange={handleChange}
+                    value={state.empNic}
+                    onChange={handleInputChange}
                     id="empNic"
                   />
-                  <span className="error">{formErrors.empNic}</span>
                 </div>
 
                 <div className="form-group col-md-3">
@@ -279,33 +289,31 @@ function AddNewUser() {
                   <select
                     className="form-select"
                     name="empType"
-                    value={fieldValues.empType}
-                    onChange={handleChange}
+                    value={state.empType}
+                    onChange={handleInputChange}
                     id="empType"
                   >
                     <option selected disabled>
                       -- Select Type --
                     </option>
-                    <option>Rider</option>
-                    <option>Driver</option>
-                    <option>Customer Care</option>
-                    <option>Center Manager</option>
+                    <option value="Rider">Rider</option>
+                    <option value="Driver">Driver</option>
+                    <option value="Customer Care">Customer Care</option>
+                    <option value="Center Manager">Center Manager</option>
                   </select>
-                  <span className="error">{formErrors.empType}</span>
                 </div>
 
                 <div className="form-group col-md-8">
-                  <label for="healthissues" className="form-label">
+                  <label for="empHealthIssues" className="form-label">
                     Special Health Issues
                   </label>
                   <textarea
                     className="form-control"
-                    name="healthissues"
-                    value={fieldValues.healthissues}
-                    onChange={handleChange}
-                    id="healthissues"
+                    name="empHealthIssues"
+                    value={state.empHealthIssues}
+                    onChange={handleInputChange}
+                    id="empHealthIssues"
                   ></textarea>
-                  <span className="error">{formErrors.healthissues}</span>
                 </div>
 
                 <button
