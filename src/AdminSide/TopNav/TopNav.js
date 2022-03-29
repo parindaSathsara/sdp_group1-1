@@ -20,7 +20,7 @@ function TopNav() {
                 className="topAvatar"
               />
               <div>
-              <span className="username__Top">Waidya Sewwandi</span>
+              <span className="username__Top">Parinda Sathsara</span>
               </div>
               <div className="post_nav">
               <span className="Post_Top">( Manager) </span>

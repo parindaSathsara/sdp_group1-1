@@ -53,15 +53,7 @@
   overflow: auto;
 }
 
-#updateuser__Container
-  .row
-  .col-md-12
-  .updateuser__Table
-  .table
-  tbody
-  tr
-  td
-  .updateuser__Btn {
+#updateuser__Container .row .col-md-12 .updateuser__Table .table tbody tr td .updateuser__Btn {
   border-radius: 0;
 }
 
@@ -77,4 +69,42 @@
 .table-dark {
   color: #ff2430;
   background: #3b2a2a;
+}
+
+
+.rdl-filter, .rdl-control {
+  display: block;
+  border: 1px solid #ff2430;
+  border-radius: 2px;
+  padding: 20px 19px !important;
+  width: 100%;
+  color: #333;
+  font-size: 16px !important;
+  line-height: 10px !important;
+}
+
+
+.rdl-control option{
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+
+.rdl-control option:focus{
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+.react-dual-listbox {
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+
+.dualListBoxContainer{
+  margin-bottom: 75px;
+}
+
+.assignvehbutton{
+  float: right;
 }
