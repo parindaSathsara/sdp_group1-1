@@ -14,9 +14,7 @@ function RegisteredUser() {
                             <div className="emp__Searching">
                                 <form class="d-flex emp__RegisteredData">
                                     <input class="form-control me-2" type="search" placeholder="Search by Employee No"/>
-                                    <button class="btn btn-outline-success" type="submit">
-                                        <i class="bi bi-search"></i>
-                                    </button>
+                                    
                                 </form>
                             </div>
                         </div>
