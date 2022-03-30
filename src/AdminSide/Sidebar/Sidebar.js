@@ -62,13 +62,11 @@ function Sidebar() {
                 <NavLink to="/adminmasterpage/cusdeliveryreq" className="NavLink">
                   Delivery Request From Customers
                 </NavLink>
-
-                
-
+              
                 <NavLink to="/adminmasterpage/collectedparcelcus" className="NavLink">
-                  Collected Parcel Details From Customers
+                  Collect Parcels From Riders
                 </NavLink>
-
+                
                 <NavLink to="/adminmasterpage/collectedparcelcenter" className="NavLink">
                   Recived Parcel From Another Center
                 </NavLink>
@@ -102,31 +100,13 @@ function Sidebar() {
 
               <div className="list-container" id="">
 
-                <NavLink to="#" className="NavLink">
-                  Add Vehicles
+                <NavLink to="/adminmasterpage/registervehicle" className="NavLink">
+                  Register Vehicles
                 </NavLink>
 
                 <NavLink to="#" className="NavLink">
-                  Assign Vehicle Roots
+                  Register Vehicles
                 </NavLink>
-
-              </div>
-
-              <hr></hr>
-
-              <li className="sidebarListItem" id="sidebar_heading">
-                <NavLink to="#" className="NavLink" id="">
-                  <i className="bi bi-cash mx-2"></i>
-                  Payment Management
-                </NavLink>
-              </li>
-              <div className="list-container" id="">
-                <NavLink to="#" className="NavLink">
-                  View All Payments
-                </NavLink>
-              </div>
-
-              
             </ul>
           </div>
         </div>
