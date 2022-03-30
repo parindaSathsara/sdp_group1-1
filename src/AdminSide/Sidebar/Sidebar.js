@@ -126,32 +126,7 @@ function Sidebar() {
                 </NavLink>
               </div>
 
-              <hr></hr>
-              <li className="sidebarListItem" id="sidebar_heading">
-                <NavLink to="#" className="NavLink">
-                  <i className="bi bi-bar-chart-line-fill mx-2"></i>
-                  Reports Management
-                </NavLink>
-              </li>
-
-              <div className="list-container" id="">
-                <NavLink to="#" className="NavLink">
-                <i class="bi bi-file-earmark-pdf"> </i>
-                  User Report
-                </NavLink>
-
-                <NavLink to="#" className="NavLink">
-                <i class="bi bi-file-earmark-pdf"> </i>
-                  Transactions Report
-                </NavLink>
-
-                <NavLink to="#" className="NavLink">
-                <i class="bi bi-file-earmark-pdf"> </i>
-                  Orders Report
-                </NavLink>
-              </div>
-
-              <hr></hr>
+              
             </ul>
           </div>
         </div>

@@ -2,12 +2,11 @@ import React, { useEffect, useState } from "react";
 import {
   collection,
   deleteDoc,
-  deleteField,
+  
   doc,
-  documentId,
-  getDoc,
+  
   getDocs,
-  updateDoc,
+  
 } from "firebase/firestore";
 import fireDb from "../../firebase";
 import { deleteUser } from "firebase/auth";

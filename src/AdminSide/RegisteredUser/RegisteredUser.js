@@ -49,17 +49,7 @@ function RegisteredUser() {
                                         <td>Rider</td>
                                     </tr>
 
-                                    <tr>
-                                        <td>E00002</td>
-                                        <td>Sanju Dilishika</td>
-                                        <td>+(94) 760770722</td>
-                                        <td>Female</td>
-                                        <td>2000-01-10</td>
-                                        <td>Kottawa</td>
-                                        <td>No: 206/36, Kottawa, Makubura</td>
-                                        <td>Unavailable</td>
-                                        <td>Driver</td>
-                                    </tr>
+                                    
                                 </tbody>
                             </table>
                         </div>
