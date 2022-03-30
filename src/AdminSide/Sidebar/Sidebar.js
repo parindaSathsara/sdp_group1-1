@@ -107,16 +107,6 @@ function Sidebar() {
                 <NavLink to="#" className="NavLink">
                   Register Vehicles
                 </NavLink>
-                
-                <NavLink to="#" className="NavLink">
-                  Assign Vehicle Roots
-                </NavLink>
-
-              </div>
-
-              
-
-              <hr></hr>
             </ul>
           </div>
         </div>
