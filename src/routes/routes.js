@@ -1,5 +1,5 @@
 import AddNewUser from "../AdminSide/AddNewUser/AddNewUser"
-// import Dashboard from "../AdminSide/Dashboard/Dashboard"
+import Dashboard from "../AdminSide/Dashboard/Dashboard"
 import RegisteredUser from "../AdminSide/RegisteredUser/RegisteredUser"
 import RemoveUser from "../AdminSide/RemoveUser/RemoveUser"
 import UpdateUser from "../AdminSide/UpdateUser/UpdateUser"
@@ -19,7 +19,7 @@ import RegisterVehicle from "../AdminSide/RegisterVehicle/RegisterVehicle"
 const routes = [
     // {path:'/', exact:true, name:'Landing', component:Landing},
     {path:'/adminmasterpage', exact:true, name:'Admin'},
-    // {path:'/adminmasterpage/dashboard', exact:true, name:'Dashboard', component:Dashboard},
+    {path:'/adminmasterpage/dashboard', exact:true, name:'Dashboard', component:Dashboard},
     {path:'/adminmasterpage/addnewuser', exact:true,name:'AddNewUser', component:AddNewUser},
     {path:'/adminmasterpage/updateuser',exact:true,name:'UpdateUser',component:UpdateUser},
     {path:'/adminmasterpage/removeeuser',exact:true,name:'RemoveUser',component:RemoveUser},
