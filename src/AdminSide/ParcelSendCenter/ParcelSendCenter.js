@@ -61,9 +61,7 @@ function ParcelSendCenter() {
         }).catch(err => {
             console.log(err)
         })
-        // console.log(data)
-        // setReparData(data.docs.map((doc) => ({...doc.data(), id:doc.id})))
-    }
+        }
 
 
 

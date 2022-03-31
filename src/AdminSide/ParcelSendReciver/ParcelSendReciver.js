@@ -289,28 +289,7 @@ function ParcelSendReciver() {
 
 
 
-                                            {/* <div className="form-group col-md-3">
-                                    <label for="nextlocation" className="form-label">
-                                        End Center
-                                    </label>
-                                    <select
-                                        className="form-select"
-                                        name="nextlocation"
-                                        
-                                        id="nextlocation"
-                                    >
-                                        <option selected disabled>
-                                        -- Select Next Center --
-                                        </option>
-                                        <option>No</option>
-                                        <option>Colombo</option>
-                                        <option>Kalutara</option>
-                                        <option>Galle</option>
-                                        <option>Matara</option>
-                                        <option>Hambantota</option>
-                                    </select>
-                                    <span className="error"></span>
-                                </div> */}
+                                           
 
 
 
