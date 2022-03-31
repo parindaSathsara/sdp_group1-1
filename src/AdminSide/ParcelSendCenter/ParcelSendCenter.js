@@ -19,6 +19,8 @@ function ParcelSendCenter() {
     const [centers, setCenters] = useState([]);
     const [vehicles, setVehicles] = useState([]);
 
+    const [sendToCenter, setSendToCenterData] = useState([]);
+
     const [parcels, setParcels] = useState({
         endCenter: '',
         sendDate: '',
@@ -27,7 +29,7 @@ function ParcelSendCenter() {
         vehicle: '',
     });
 
-    var x=0;
+    var x = 0;
 
     const onChange = (val) => {
         setSelected(val);
@@ -52,29 +54,32 @@ function ParcelSendCenter() {
     }
 
 
-    
+    const getSendToCenter = async () => {
+        fireDb.collection('sendtocenter').where('status', '==', 'Delivered').get().then(res => {
+            setSendToCenterData(res.docs.map((doc) => ({ ...doc.data(), id: doc.id })))
+            console.log(res)
+        }).catch(err => {
+            console.log(err)
+        })
+        }
+
+
+
 
     const parcelSendSubmit = async (e) => {
         e.preventDefault();
-        
-        // var modeledDataArr=[]
-
-        // selected.forEach(element => {
-        //     var arr = {'orderId': element,'orderStatus':'NotDelivered'}
-
-        //     modeledDataArr.push(arr)
-        // });
 
         if (selected.length > 0) {
-        
+
             const dataset = {
                 endCenter: parcels.endCenter,
                 sendDate: parcels.sendDate,
                 sendTime: parcels.sendTime,
                 path: parcels.path,
-                vehicle:parcels.vehicle,
+                vehicle: parcels.vehicle,
                 orderNumbers: selected,
-                status:'NotDelivered',
+                startCenter:"",
+                status: 'NotDelivered',
             };
 
 
@@ -92,7 +97,10 @@ function ParcelSendCenter() {
                                 console.log("Document successfully updated!");
                                 setSelected([]);
                                 setOptions([]);
+                                setSendToCenterData([])
+
                                 FetchDeliveryData();
+                                getSendToCenter();
                             })
                     });
                 })
@@ -109,30 +117,26 @@ function ParcelSendCenter() {
 
         FetchDeliveryData();
 
-        const FetchCentersData = () => {
-            fireDb.collection("areas").get().then((querySnapshot) => {
-                querySnapshot.forEach(element => {
-                    var data = element.data();
 
-                    setCenters(prevArray => [...prevArray, data])
-                });
+        fireDb.collection("areas").get().then((querySnapshot) => {
+            querySnapshot.forEach(element => {
+                var data = element.data();
 
-            })
-        }
-        FetchCentersData();
+                setCenters(prevArray => [...prevArray, data])
+            });
 
+        })
 
+        getSendToCenter();
 
-        const FetchVehicleData = () => {
-            fireDb.collection("vehicle_details").get().then((querySnapshot) => {
-                querySnapshot.forEach(element => {
-                    var data = element.data();
-                    setVehicles(prevArray => [...prevArray, data['vehiNo']])
-                });
+        fireDb.collection("vehicle_details").get().then((querySnapshot) => {
+            querySnapshot.forEach(element => {
+                var data = element.data();
+                setVehicles(prevArray => [...prevArray, data['vehiNo']])
+            });
 
-            })
-        }
-        FetchVehicleData();
+        })
+
 
     }, []);
 
@@ -168,57 +172,40 @@ function ParcelSendCenter() {
 
 
                         <div className="updateuser__Header">
-                            <h4 className="updateuser__Heading">Parcels to sent to another Center</h4>
+                            <h4 className="updateuser__Heading">Parcels Sent to Another Centers</h4>
 
 
                         </div>
-                        <div className='searchmain'>
-                            <div className='searchtop'>
-                                <input class="form-control me-2" type="search" id='usersearch' placeholder="Search by Request ID" />
-                            </div>
-                            <div className='searchmid'>
-                                <button class="btn btn-outline-success" type="submit" id='btnsearch' >
-                                    <i class="bi bi-search" id='searchicon'></i>
-                                </button>
-                            </div>
-
-                            <div className='searchbot'>
-
-                            </div>
-                        </div>
-                        <div className="updateuser__Table">
-                            <table className="table">
-                                <thead className="table-dark">
+                        <div className="table-responsive">
+                            <table className="table table-bordered" id="dataTable">
+                                <thead>
                                     <tr>
-                                        <th>SP-ID</th>
-                                        <th>R-ID</th>
+                                        <th>Bulk ID</th>
                                         <th>End Center</th>
+                                        <th>Path</th>
+                                        <th>Send Date</th>
+                                        <th>Assigned Vehicle</th>
+                                        <th>Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        {/* , , , , */}
-                                        <td>SP00001</td>
-                                        <td>R-00002</td>
-                                        <td>Matara</td>
-                                        <td>02-18-2022</td>
-                                        <td>07.12</td>
-                                        <td> LA-9876</td>
-                                        <td>Galle-Matara</td>
-                                        <td>
-                                            <button type="button" className="add_request" name="empBtn__Update" id="empBtn__Update" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-                                                Assign Vehicle
-                                            </button>
-                                        </td>
-
-                                    </tr>
-
+                                    {
+                                        sendToCenter.map((sendCenter) => {
+                                            return (
+                                                <tr key={sendCenter.id}>
+                                                    <td>{sendCenter.id}</td>
+                                                    <td>{sendCenter.endCenter}</td>
+                                                    <td>{sendCenter.path}</td>
+                                                    <td>{sendCenter.sendDate}</td>
+                                                    <td>{sendCenter.vehicle}</td>
+                                                    <td>{sendCenter.status}</td>
+                                                </tr>
+                                            )
+                                        })
+                                    }
 
                                 </tbody>
                             </table>
-
-
-
                         </div>
                     </div>
                 </div>

@@ -54,7 +54,7 @@ function Sidebar() {
               <li className="sidebarListItem" id="sidebar_heading">
                 <NavLink to="#" className="NavLink" id="">
                   <i className="bi bi-gear-fill mx-2"></i>
-                  Parcle Management
+                  Parcel Management
                 </NavLink>
               </li>
               <div className="list-container" id="">
@@ -76,9 +76,8 @@ function Sidebar() {
                 </NavLink>
 
                 <NavLink to="/adminmasterpage/parcelsendreciver" className="NavLink">
-                  Parcels For Diliver To Reciver
+                  Distribute Parcels To Receivers
                 </NavLink>
-
 
                 <NavLink to="/adminmasterpage/viewallorders" className="NavLink">
                   View All Parcel Details
@@ -104,10 +103,19 @@ function Sidebar() {
                   Register Vehicles
                 </NavLink>
 
-                <NavLink to="#" className="NavLink">
-                  Register Vehicles
+                <NavLink to="/adminmasterpage/releasevehicles" className="NavLink">
+                  Release/Return Vehicles
                 </NavLink>
-                </div>
+                
+                <NavLink to="#" className="NavLink">
+                  Assign Vehicle Roots
+                </NavLink>
+
+              </div>
+
+              
+
+              <hr></hr>
             </ul>
           </div>
         </div>
