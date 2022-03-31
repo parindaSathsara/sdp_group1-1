@@ -7,6 +7,9 @@ function ParcelSendReciver() {
 
 
     const [receivedParcels, setParcels] = useState([]);
+
+    const [inTransitOrders, setInTransitOrders] = useState([]);
+
     const [centers, setCenters] = useState([]);
     const [vehicles, setVehicles] = useState([]);
     const [assignVehicle, setAssignVehicle] = useState([]);
@@ -27,8 +30,34 @@ function ParcelSendReciver() {
                             var snapdata = snapshot;
                             console.log(snapdata);
 
-                            if(snapdata.data()['reqStatus']!='OutForDelivery'){
+                            if (snapdata.data()['reqStatus'] != 'OutForDelivery') {
                                 setParcels(prevArray => [...prevArray, snapshot])
+                            }
+                        })
+                        .catch(err => {
+                            console.log('Error getting documents', err);
+                        });
+                });
+            });
+        })
+    }
+
+
+    const FetchIntransitOrders = () => {
+        fireDb.collection("sendtocenter").where('endCenter', '==', 'Galle').where('status', '==', 'Delivered').get().then((querySnapshot) => {
+            querySnapshot.forEach(element => {
+
+                var data = element.data();
+                var orderNumbers = data['orderNumbers']
+
+                orderNumbers.forEach(element => {
+                    fireDb.collection('delivery_req').doc(element).get()
+                        .then(snapshot => {
+                            var snapdata = snapshot;
+                            console.log(snapdata);
+
+                            if (snapdata.data()['reqStatus'] != 'OutForDelivery') {
+                                setInTransitOrders(prevArray => [...prevArray, snapshot])
                             }
                         })
                         .catch(err => {
@@ -55,6 +84,7 @@ function ParcelSendReciver() {
     useEffect(() => {
 
         FetchOrderData();
+        FetchIntransitOrders();
 
         const FetchCentersData = () => {
             fireDb.collection("areas").get().then((querySnapshot) => {
@@ -142,13 +172,11 @@ function ParcelSendReciver() {
                     <div className="col-md-12">
                         <div className="updateuser__Header">
                             <h4 className="updateuser__Heading">Packages to deliver to reciver</h4>
-
-
                         </div>
 
-                        <div className="updateuser__Table">
-                            <table className="table">
-                                <thead className="table-dark">
+                        <div className="table-responsive">
+                            <table className="table table-bordered" id="dataTable">
+                                <thead>
                                     <tr>
                                         <th>Order ID</th>
                                         <th>Receiver Name</th>
@@ -171,6 +199,38 @@ function ParcelSendReciver() {
                                 </tbody>
                             </table>
                         </div>
+
+
+                        <br></br><br></br>
+
+                        <div className="updateuser__Header">
+                            <h4 className="updateuser__Heading">In Transit Orders</h4>
+                        </div>
+
+                        <div className="table-responsive">
+                            <table className="table table-bordered" id="dataTable">
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Receiver Name</th>
+                                        <th>Receiver Address</th>
+                                        <th>Receiver Contact</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {inTransitOrders.map((inTransit) => (
+                                        <tr>
+                                            <td>{inTransit['id']}</td>
+                                            <td>{inTransit.data()['recName']}</td>
+                                            <td>{inTransit.data()['recAddress']}</td>
+                                            <td>{inTransit.data()['recContact']}</td>
+                                        </tr>
+                                    ))}
+
+                                </tbody>
+                            </table>
+                        </div>
+
 
                         <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                             <div class="modal-dialog modal-xl">
@@ -229,34 +289,13 @@ function ParcelSendReciver() {
 
 
 
-                                            {/* <div className="form-group col-md-3">
-                                    <label for="nextlocation" className="form-label">
-                                        End Center
-                                    </label>
-                                    <select
-                                        className="form-select"
-                                        name="nextlocation"
-                                        
-                                        id="nextlocation"
-                                    >
-                                        <option selected disabled>
-                                        -- Select Next Center --
-                                        </option>
-                                        <option>No</option>
-                                        <option>Colombo</option>
-                                        <option>Kalutara</option>
-                                        <option>Galle</option>
-                                        <option>Matara</option>
-                                        <option>Hambantota</option>
-                                    </select>
-                                    <span className="error"></span>
-                                </div> */}
+                                           
 
 
 
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" id="btn__UpdateClose" data-bs-dismiss="modal">Close</button>
-                                                <button type="submit" class="btn btn-danger" id="btn__UpdateUpdate">Out For Delivery</button>
+                                                <button type="submit" class="btn btn-danger" id="btn__UpdateUpdate" >Out For Delivery</button>
                                             </div>
                                         </form>
                                     </div>
