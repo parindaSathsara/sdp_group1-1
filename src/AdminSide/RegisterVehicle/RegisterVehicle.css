@@ -1,5 +1,16 @@
+
+
+.container-fluid .row .card__Vehicle{
+    background: #303442;
+    padding: 20px;
+    border-radius: 0;
+}
+
 #updateuser__Container {
     margin-left: -10px;
+    margin-top: 10px;
+  font-family: "Poppins", sans-serif;
+  color: white;
   }
   
   #updateuser__Container .row .col-md-12 .updateuser__Header {
@@ -79,12 +90,3 @@
     background: #3b2a2a;
   }
   
-
-  .form-label{
-    color: black;
-  }
-
-
-  .rowContainerModel{
-    margin-top: 40px !important;
-  }

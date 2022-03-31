@@ -1,66 +1,209 @@
 import React from 'react';
 import './ParcelSendCenter.css';
+import DualListBox from 'react-dual-listbox';
+import 'react-dual-listbox/lib/react-dual-listbox.css';
+import { useEffect, useState } from 'react';
+import fireDb from '../../firebase'
+import { addDoc, collection, getDocs } from "firebase/firestore";
+
+const optionss = [
+    { value: 'one', label: 'Option One' },
+    { value: 'two', label: 'Option Two' },
+];
+
 
 function ParcelSendCenter() {
-  return (
-      <>
-        <div className="container-fluid" id="updateuser__Container">
+
+    const [selected, setSelected] = useState([]);
+    const [options, setOptions] = useState([]);
+    const [centers, setCenters] = useState([]);
+    const [vehicles, setVehicles] = useState([]);
+
+    const [sendToCenter, setSendToCenterData] = useState([]);
+
+    const [parcels, setParcels] = useState({
+        endCenter: '',
+        sendDate: '',
+        sendTime: '',
+        path: '',
+        vehicle: '',
+    });
+
+    var x = 0;
+
+    const onChange = (val) => {
+        setSelected(val);
+    }
+
+
+    const handleInput = (e) => {
+        console.log(e.target.name)
+
+        setParcels({ ...parcels, [e.target.name]: e.target.value })
+    }
+
+    const FetchDeliveryData = () => {
+        fireDb.collection("delivery_req").where('reqStatus', '==', 'InSortingCenter').get().then((querySnapshot) => {
+            querySnapshot.forEach(element => {
+                var data = element.data();
+
+                var arr = { 'value': element['id'], label: element['id'] + ' | To ' + data['recServiceArea'] }
+                setOptions(prevArray => [...prevArray, arr])
+            });
+        })
+    }
+
+
+    const getSendToCenter = async () => {
+        fireDb.collection('sendtocenter').where('status', '==', 'Delivered').get().then(res => {
+            setSendToCenterData(res.docs.map((doc) => ({ ...doc.data(), id: doc.id })))
+            console.log(res)
+        }).catch(err => {
+            console.log(err)
+        })
+        }
+
+
+
+
+    const parcelSendSubmit = async (e) => {
+        e.preventDefault();
+
+        if (selected.length > 0) {
+
+            const dataset = {
+                endCenter: parcels.endCenter,
+                sendDate: parcels.sendDate,
+                sendTime: parcels.sendTime,
+                path: parcels.path,
+                vehicle: parcels.vehicle,
+                orderNumbers: selected,
+                startCenter:"",
+                status: 'NotDelivered',
+            };
+
+
+            await addDoc(collection(fireDb, "sendtocenter"), dataset)
+                .then((user) => {
+                    console.log("success")
+
+                    selected.forEach(element => {
+                        var delivery_reqStUpdate = fireDb.collection("delivery_req").doc(element);
+
+                        return delivery_reqStUpdate.update({
+                            reqStatus: "OutForDelivery"
+                        })
+                            .then(function () {
+                                console.log("Document successfully updated!");
+                                setSelected([]);
+                                setOptions([]);
+                                setSendToCenterData([])
+
+                                FetchDeliveryData();
+                                getSendToCenter();
+                            })
+                    });
+                })
+                .catch((err) => {
+
+                });
+
+
+        }
+    }
+
+
+    useEffect(() => {
+
+        FetchDeliveryData();
+
+
+        fireDb.collection("areas").get().then((querySnapshot) => {
+            querySnapshot.forEach(element => {
+                var data = element.data();
+
+                setCenters(prevArray => [...prevArray, data])
+            });
+
+        })
+
+        getSendToCenter();
+
+        fireDb.collection("vehicle_details").get().then((querySnapshot) => {
+            querySnapshot.forEach(element => {
+                var data = element.data();
+                setVehicles(prevArray => [...prevArray, data['vehiNo']])
+            });
+
+        })
+
+
+    }, []);
+
+
+    return (
+        <>
+            <div className="container-fluid" id="updateuser__Container">
                 <div className="row">
                     <div className="col-md-12">
                         <div className="updateuser__Header">
-                            <h4 className="updateuser__Heading">Parcels to sent to another Center</h4>
+                            <h4 className="updateuser__Heading">Assign Vehicles</h4>
 
-                           
+
                         </div>
 
-                        <div className='searchmain'>
-                            <div className='searchtop'>
-                                <input class="form-control me-2" type="search" id='usersearch' placeholder="Search by Request ID"/>
-                            </div>
-                            <div className='searchmid'>
-                                <button class="btn btn-outline-success" type="submit" id='btnsearch' >
-                                <i class="bi bi-search" id='searchicon'></i>
-                                </button>
-                            </div>
+                        <div className="col-md-12 dualListBoxContainer">
+                            <DualListBox
+                                options={options}
+                                selected={selected}
+                                onChange={onChange}
+                                canFilter
+                                filterCallback={(option, filterInput) => {
+                                    if (filterInput === '') {
+                                        return true;
+                                    }
 
-                            <div className='searchbot'>
-                                           
-                            </div>
+                                    return (new RegExp(filterInput, 'i')).test(option.label);
+                                }}
+                            />
+                            <br></br>
+                            <button type="button" data-bs-toggle="modal" data-bs-target="#staticBackdrop" class="btn btn-danger assignvehbutton">Assign Vehicle</button>
                         </div>
-                        
 
-                        <div className="updateuser__Table">
-                            <table className="table">
-                                <thead className="table-dark">
+
+                        <div className="updateuser__Header">
+                            <h4 className="updateuser__Heading">Parcels Sent to Another Centers</h4>
+
+
+                        </div>
+                        <div className="table-responsive">
+                            <table className="table table-bordered" id="dataTable">
+                                <thead>
                                     <tr>
-                                        <th>SP-ID</th>
-                                        <th>R-ID</th>
+                                        <th>Bulk ID</th>
                                         <th>End Center</th>
-                                        <th>Sent Date</th>
-                                        <th>Sent Time</th>
-                                        <th>Vehicle-No</th>
                                         <th>Path</th>
-                                        <th>control</th>
+                                        <th>Send Date</th>
+                                        <th>Assigned Vehicle</th>
+                                        <th>Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>SP00001</td>
-                                        <td>R-00001</td>
-                                        <td>Colombo</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td>
-                                            <button type="button" className="add_request" name="empBtn__Update" id="empBtn__Update" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-                                                Assign Vehicle
-                                            </button>
-                                        </td>
-                                        
-                                    </tr>
+                                    {
+                                        sendToCenter.map((sendCenter) => {
+                                            return (
+                                                <tr key={sendCenter.id}>
+                                                    <td>{sendCenter.id}</td>
+                                                    <td>{sendCenter.endCenter}</td>
+                                                    <td>{sendCenter.path}</td>
+                                                    <td>{sendCenter.sendDate}</td>
+                                                    <td>{sendCenter.vehicle}</td>
+                                                    <td>{sendCenter.status}</td>
+                                                </tr>
+                                            )
+                                        })
+                                    }
 
-                                   
                                 </tbody>
                             </table>
                         </div>
@@ -72,33 +215,37 @@ function ParcelSendCenter() {
                 <div class="modal-dialog modal-xl">
                     <div class="modal-content" id="modal__Update">
                         <div class="modal-body">
-                            <form className="row g-3">
+                            <form className="row g-3" onSubmit={parcelSendSubmit}>
 
-                            <div className="form-group col-md-4">
-                                    <label for="endcenter" className="form-label">
+                                <div className="form-group col-md-3">
+                                    <label for="slectpath" className="form-label">
                                         End Center
                                     </label>
-                                    <input
-                                        value={"Galle"}
-                                        type="text"
-                                        className="form-control"
-                                        name="endcenter"
-                                        
-                                        id="endcenter"
-                                        disabled
-                                    />
+
+                                    <select
+                                        className="form-select"
+                                        name="endCenter"
+                                        id="slectpath"
+                                        onChange={handleInput}
+                                    >
+                                        {centers.map((center) => (
+                                            <option value={center['area_name']}>{center['area_name']}</option>
+                                        ))}
+                                    </select>
+
+
                                     <span className="error"></span>
                                 </div>
 
-                            <div className="form-group col-md-3 div__Birth">
+                                <div className="form-group col-md-3 div__Birth">
                                     <label for="coldate" className="form-label">
-                                        Send Date 
+                                        Send Date
                                     </label>
                                     <input
                                         type="date"
                                         className="form-control"
-                                        
-                                        name="coldate"
+                                        onChange={handleInput}
+                                        name="sendDate"
                                         id="coldate"
                                     />
                                     <span className="error"></span>
@@ -111,34 +258,11 @@ function ParcelSendCenter() {
                                     <input
                                         type="time"
                                         className="form-control"
-                                        
-                                        name="coltime"
+                                        onChange={handleInput}
+                                        name="sendTime"
                                         id="coltime"
                                     />
                                     <span className="error"></span>
-                                </div>
-                            
-                                
-
-                                
-
-                                <div className="form-group col-md-3">
-                                    <label for="parcel status" className="form-label">
-                                        Parcel Status
-                                    </label>
-                                    <select
-                                        className="form-select"
-                                        name="parcelstatus"
-                                        
-                                        id="parcelstatus"
-                                    >
-                                        <option selected disabled>
-                                        -- Parcel Status --
-                                        </option>
-                                        <option>In Transit</option>
-                                       
-                                        
-                                    </select>
                                 </div>
 
                                 <div className="form-group col-md-3">
@@ -147,16 +271,16 @@ function ParcelSendCenter() {
                                     </label>
                                     <select
                                         className="form-select"
-                                        name="slectpath"
-                                        
+                                        name="path"
+                                        onChange={handleInput}
                                         id="slectpath"
                                     >
                                         <option selected disabled>
-                                        -- Select Path --
+                                            -- Select Path --
                                         </option>
-                                        <option>Gale-Matara</option>
-                                        <option>Colombo-Nuwara</option>
-                                        <option>Hambanthota_Ampara</option>
+                                        <option value="Galle-Matara">Gale-Matara</option>
+                                        <option value="Colombo-Nuwara">Colombo-Nuwara</option>
+                                        <option value="Hambanthota-Ampara">Hambanthota-Ampara</option>
                                     </select>
                                     <span className="error"></span>
                                 </div>
@@ -167,49 +291,31 @@ function ParcelSendCenter() {
                                     </label>
                                     <select
                                         className="form-select"
-                                        name="slectvehicle"
-                                        
+                                        name="vehicle"
+                                        onChange={handleInput}
                                         id="slectvehicle"
                                     >
                                         <option selected disabled>
-                                        -- Select Vehicle --
+                                            -- Select Vehicle --
                                         </option>
-                                        <option>LA-9876</option>
-                                        <option>LB-5674</option>
+                                        {vehicles.map((vehicle) => (
+                                            <option value={vehicle}>{vehicle}</option>
+                                        ))}
                                     </select>
                                     <span className="error"></span>
                                 </div>
 
-
-                                
-
-                                <div className="form-group col-md-3">
-                                    <label for="officerid" className="form-label">
-                                        My ID
-                                    </label>
-                                    <input
-                                        value={"Sanju"}
-                                        type="text"
-                                        className="form-control"
-                                        name="officerid"
-                                        
-                                        id="officerid"
-                                        disabled
-                                    />
-                                    <span className="error"></span>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" id="btn__UpdateClose" data-bs-dismiss="modal" aria-label="Close">Close</button>
+                                    <button type="submit" class="btn btn-primary" id="btn__UpdateUpdate" aria-label="Close" data-bs-dismiss="modal">Save</button>
                                 </div>
-                        
                             </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" id="btn__UpdateClose" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary" id="btn__UpdateUpdate">Save</button>
                         </div>
                     </div>
                 </div>
             </div>
-      </>
-  )
+        </>
+    )
 }
 
 export default ParcelSendCenter;

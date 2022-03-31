@@ -54,7 +54,7 @@ function Sidebar() {
               <li className="sidebarListItem" id="sidebar_heading">
                 <NavLink to="#" className="NavLink" id="">
                   <i className="bi bi-gear-fill mx-2"></i>
-                  Parcle Management
+                  Parcel Management
                 </NavLink>
               </li>
               <div className="list-container" id="">
@@ -62,13 +62,11 @@ function Sidebar() {
                 <NavLink to="/adminmasterpage/cusdeliveryreq" className="NavLink">
                   Delivery Request From Customers
                 </NavLink>
-
-                
-
+              
                 <NavLink to="/adminmasterpage/collectedparcelcus" className="NavLink">
-                  Collected Parcel Details From Customers
+                  Collect Parcels From Riders
                 </NavLink>
-
+                
                 <NavLink to="/adminmasterpage/collectedparcelcenter" className="NavLink">
                   Recived Parcel From Another Center
                 </NavLink>
@@ -78,9 +76,8 @@ function Sidebar() {
                 </NavLink>
 
                 <NavLink to="/adminmasterpage/parcelsendreciver" className="NavLink">
-                  Parcels For Diliver To Reciver
+                  Distribute Parcels To Receivers
                 </NavLink>
-
 
                 <NavLink to="/adminmasterpage/viewallorders" className="NavLink">
                   View All Parcel Details
@@ -102,54 +99,21 @@ function Sidebar() {
 
               <div className="list-container" id="">
 
-                <NavLink to="#" className="NavLink">
-                  Add Vehicles
+                <NavLink to="/adminmasterpage/registervehicle" className="NavLink">
+                  Register Vehicles
                 </NavLink>
 
+                <NavLink to="/adminmasterpage/releasevehicles" className="NavLink">
+                  Release/Return Vehicles
+                </NavLink>
+                
                 <NavLink to="#" className="NavLink">
                   Assign Vehicle Roots
                 </NavLink>
 
               </div>
 
-              <hr></hr>
-
-              <li className="sidebarListItem" id="sidebar_heading">
-                <NavLink to="#" className="NavLink" id="">
-                  <i className="bi bi-cash mx-2"></i>
-                  Payment Management
-                </NavLink>
-              </li>
-              <div className="list-container" id="">
-                <NavLink to="#" className="NavLink">
-                  View All Payments
-                </NavLink>
-              </div>
-
-              <hr></hr>
-              <li className="sidebarListItem" id="sidebar_heading">
-                <NavLink to="#" className="NavLink">
-                  <i className="bi bi-bar-chart-line-fill mx-2"></i>
-                  Reports Management
-                </NavLink>
-              </li>
-
-              <div className="list-container" id="">
-                <NavLink to="#" className="NavLink">
-                <i class="bi bi-file-earmark-pdf"> </i>
-                  User Report
-                </NavLink>
-
-                <NavLink to="#" className="NavLink">
-                <i class="bi bi-file-earmark-pdf"> </i>
-                  Transactions Report
-                </NavLink>
-
-                <NavLink to="#" className="NavLink">
-                <i class="bi bi-file-earmark-pdf"> </i>
-                  Orders Report
-                </NavLink>
-              </div>
+              
 
               <hr></hr>
             </ul>

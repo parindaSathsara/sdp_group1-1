@@ -21,7 +21,10 @@
   
   #searchicon {
     color: white;
+    
   }
+  
+  
   
   #updateuser__Container {
     margin-top: 8em;
@@ -74,17 +77,7 @@
     padding: 20px;
   }
   
-  .table-dark {
+  .table-dark{
     color: #ff2430;
     background: #3b2a2a;
-  }
-  
-
-  .form-label{
-    color: black;
-  }
-
-
-  .rowContainerModel{
-    margin-top: 40px !important;
   }
