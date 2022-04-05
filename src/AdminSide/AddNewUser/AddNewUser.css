@@ -84,8 +84,13 @@
 }
 
 .card__Form {
-  margin-left: 200px;
-  margin-right: 300;
+  padding-left: 40px;
+  padding-right: 40px;
+}
+
+.card__Form .form-label{
+  color: white;
+  font-size: 17px;
 }
 
 .form-control {
