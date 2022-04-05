@@ -107,9 +107,9 @@ function Sidebar() {
                   Release/Return Vehicles
                 </NavLink>
                 
-                <NavLink to="#" className="NavLink">
+                {/* <NavLink to="#" className="NavLink">
                   Assign Vehicle Roots
-                </NavLink>
+                </NavLink> */}
 
               </div>
 

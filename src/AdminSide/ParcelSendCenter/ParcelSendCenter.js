@@ -5,6 +5,7 @@ import 'react-dual-listbox/lib/react-dual-listbox.css';
 import { useEffect, useState } from 'react';
 import fireDb from '../../firebase'
 import { addDoc, collection, getDocs } from "firebase/firestore";
+import Swal from "sweetalert2";
 
 const optionss = [
     { value: 'one', label: 'Option One' },
@@ -43,7 +44,7 @@ function ParcelSendCenter() {
     }
 
     const FetchDeliveryData = () => {
-        fireDb.collection("delivery_req").where('reqStatus', '==', 'InSortingCenter').get().then((querySnapshot) => {
+        fireDb.collection("delivery_req").where('reqStatus', '==', 'InSortingCenter').where('cusServiceArea','==',sessionStorage.getItem("center")).get().then((querySnapshot) => {
             querySnapshot.forEach(element => {
                 var data = element.data();
 
@@ -55,13 +56,15 @@ function ParcelSendCenter() {
 
 
     const getSendToCenter = async () => {
-        fireDb.collection('sendtocenter').where('status', '==', 'Delivered').get().then(res => {
+        fireDb.collection('sendtocenter').where('status', '==', 'Delivered').where('startCenter','==',sessionStorage.getItem("center")).get().then(res => {
             setSendToCenterData(res.docs.map((doc) => ({ ...doc.data(), id: doc.id })))
             console.log(res)
         }).catch(err => {
             console.log(err)
         })
-        }
+        // console.log(data)
+        // setReparData(data.docs.map((doc) => ({...doc.data(), id:doc.id})))
+    }
 
 
 
@@ -78,7 +81,7 @@ function ParcelSendCenter() {
                 path: parcels.path,
                 vehicle: parcels.vehicle,
                 orderNumbers: selected,
-                startCenter:"",
+                startCenter: "",
                 status: 'NotDelivered',
             };
 
@@ -95,6 +98,14 @@ function ParcelSendCenter() {
                         })
                             .then(function () {
                                 console.log("Document successfully updated!");
+
+                                Swal.fire(
+                                    'Parcel Send',
+                                    'Parcel Send to Relevant Center Successfully',
+                                    'success'
+                                )
+
+
                                 setSelected([]);
                                 setOptions([]);
                                 setSendToCenterData([])
@@ -102,10 +113,15 @@ function ParcelSendCenter() {
                                 FetchDeliveryData();
                                 getSendToCenter();
                             })
+                            
                     });
                 })
                 .catch((err) => {
-
+                    Swal.fire(
+                        'Parcel Send Error',
+                        'Error while sending parcel',
+                        'error'
+                    )
                 });
 
 
@@ -129,8 +145,9 @@ function ParcelSendCenter() {
 
         getSendToCenter();
 
-        fireDb.collection("vehicle_details").get().then((querySnapshot) => {
-            querySnapshot.forEach(element => {
+
+        fireDb.collection("vehicle_details").where('regCenter','==',sessionStorage.getItem("center")).get().then((res) => {
+            res.forEach(element => {
                 var data = element.data();
                 setVehicles(prevArray => [...prevArray, data['vehiNo']])
             });

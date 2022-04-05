@@ -17,7 +17,7 @@ function ParcelSendReciver() {
 
 
     const FetchOrderData = () => {
-        fireDb.collection("sendtocenter").where('endCenter', '==', 'Galle').where('status', '==', 'OutForDelivery').get().then((querySnapshot) => {
+        fireDb.collection("sendtocenter").where('endCenter', '==', sessionStorage.getItem("center")).where('status', '==', 'OutForDelivery').get().then((querySnapshot) => {
             querySnapshot.forEach(element => {
 
                 var data = element.data();
@@ -44,7 +44,7 @@ function ParcelSendReciver() {
 
 
     const FetchIntransitOrders = () => {
-        fireDb.collection("sendtocenter").where('endCenter', '==', 'Galle').where('status', '==', 'Delivered').get().then((querySnapshot) => {
+        fireDb.collection("sendtocenter").where('endCenter', '==', sessionStorage.getItem("center")).where('status', '==', 'Delivered').get().then((querySnapshot) => {
             querySnapshot.forEach(element => {
 
                 var data = element.data();
@@ -70,7 +70,7 @@ function ParcelSendReciver() {
 
 
     const FetchVehicleData = () => {
-        fireDb.collection("vehicle_details").get().then((querySnapshot) => {
+        fireDb.collection("vehicle_details").where('regCenter','==',sessionStorage.getItem("center")).get().then((querySnapshot) => {
             querySnapshot.forEach(element => {
                 var data = element.data();
 
@@ -289,7 +289,28 @@ function ParcelSendReciver() {
 
 
 
-                                           
+                                            {/* <div className="form-group col-md-3">
+                                    <label for="nextlocation" className="form-label">
+                                        End Center
+                                    </label>
+                                    <select
+                                        className="form-select"
+                                        name="nextlocation"
+                                        
+                                        id="nextlocation"
+                                    >
+                                        <option selected disabled>
+                                        -- Select Next Center --
+                                        </option>
+                                        <option>No</option>
+                                        <option>Colombo</option>
+                                        <option>Kalutara</option>
+                                        <option>Galle</option>
+                                        <option>Matara</option>
+                                        <option>Hambantota</option>
+                                    </select>
+                                    <span className="error"></span>
+                                </div> */}
 
 
 
