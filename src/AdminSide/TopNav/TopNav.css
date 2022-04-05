@@ -25,6 +25,11 @@
   margin-right: 0;
   float: right;
   text-align: center;
+  color: white;
+}
+
+.btnLogout{
+  margin-left: 20px !important;
 }
 
 .navslog {
