@@ -69,34 +69,29 @@ function AddNewUser() {
       auth,
       state.empEmail,
       state.empPassword
-    )
-      .then((userCred) => {
-        const user = userCred.user;
-      })
+    ).then((userCred) => {
+      const user = userCred.user;
+
+      fireDb.collection("emp_details").doc(user.uid).set(state).then(res => {
+        Swal.fire(
+          'Employee Created',
+          'Employee Created Successfully',
+          'success'
+        )
+      });
+
+
+    })
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
-      });
-
-    await addDoc(collection(fireDb, "emp_details"), state)
-      .then((user) => {
-        const newUser = user.id;
-        Swal.fire("New Employee Created Successfully");
-
-        setState({});
-      })
-      .catch((err) => {
-        Swal.fire({
-          icon: "error",
-          title: "Oops...",
-          text: "Something went wrong!",
-        });
+        console.log(error.message)
       });
   };
 
   return (
     <>
-      <div className="container-fluid" id="addnewuser__Container">
+      <div className="container-fluid col-md-12" id="addnewuser__Container">
         <div className="row">
           <div className="card mt-2 card__User">
             <div className="card__Header">
@@ -123,7 +118,7 @@ function AddNewUser() {
                   />
                 </div>
 
-                <div className="form-group col-md-5">
+                <div className="form-group col-md-6">
                   <label for="empContact" className="form-label">
                     Contact Number
                   </label>
@@ -138,7 +133,7 @@ function AddNewUser() {
                   />
                 </div>
 
-                <div className="form-group col-md-5">
+                <div className="form-group col-md-6">
                   <label for="empEmail" className="form-label">
                     Email Address
                   </label>
@@ -203,7 +198,7 @@ function AddNewUser() {
                   ></textarea>
                 </div>
 
-                <div className="form-group col-md-3">
+                <div className="form-group col-md-4">
                   <label for="destributionCenter" className="form-label">
                     Destribution Center
                   </label>
@@ -225,7 +220,7 @@ function AddNewUser() {
                   </select>
                 </div>
 
-                <div className="form-group col-md-2 div__Gender">
+                <div className="form-group col-md-3 div__Gender">
                   <label for="empGender" className="form-label">
                     Gender
                   </label>
@@ -316,14 +311,17 @@ function AddNewUser() {
                   ></textarea>
                 </div>
 
-                <button
-                  type="submit"
-                  className="btn btn-primary"
-                  name="saveEmployee"
-                  id="saveEmployee"
-                >
-                  Save New User
-                </button>
+                <div className="form-group col-md-8">
+                  <button
+                    type="submit"
+                    className="btn btn-danger saveBtn"
+                    name="saveEmployee"
+                  >
+                    Save New User
+                  </button>
+                </div>
+
+
               </form>
             </div>
           </div>

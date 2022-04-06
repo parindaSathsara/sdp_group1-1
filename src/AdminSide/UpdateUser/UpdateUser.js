@@ -70,22 +70,43 @@ function UpdateUser() {
   const handleUpdateSubmit = async (e) => {
     e.preventDefault();
 
-    await fireDb
-      .collection("emp_details")
-      .doc(currentId)
-      .update(updateDetails)
-      .then((res) => {
-        console.log(res);
-        Swal.fire("Updated Successfully");
-      })
-      .catch((err) => {
-        console.log(err);
-        Swal.fire({
-          icon: "error",
-          title: "Oops...",
-          text: "Something went wrong!",
-        });
-      });
+
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You want update employee details ?",
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, Update It!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+
+        fireDb
+          .collection("emp_details")
+          .doc(currentId)
+          .update(updateDetails)
+          .then((res) => {
+            console.log(res);
+            Swal.fire(
+              'Updated!',
+              'User Account has been Updated.',
+              'success'
+            )
+          })
+          .catch((err) => {
+            console.log(err);
+            Swal.fire({
+              icon: "error",
+              title: "Oops...",
+              text: "Something went wrong!",
+            });
+          });
+
+
+      }
+    })
+
   };
 
   return (
@@ -115,23 +136,16 @@ function UpdateUser() {
               </div>
             </div>
 
-            <div className="updateuser__Table">
-              <table className="table" id="dataTable">
-                <thead className="table-dark">
+            <div className="table-responsive">
+              <table className="table table-bordered" id="dataTable">
+                <thead>
                   <tr>
-                    <th>E-ID</th>
+                    <th>Employee ID</th>
                     <th>Employee Name</th>
                     <th>Contact Number</th>
                     <th>Email Address</th>
-                    <th>Service Area</th>
-                    <th>Permanent Address</th>
-                    <th>Distribution Center</th>
-                    <th>Gender</th>
-                    <th>DOB</th>
-                    <th>NIC</th>
                     <th>Employee Type</th>
-                    <th>Health Issues</th>
-                    <th>Action</th>
+                    <th>Employee Type</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -142,14 +156,7 @@ function UpdateUser() {
                         <td>{empUser.empName}</td>
                         <td>{empUser.empContact}</td>
                         <td>{empUser.empEmail}</td>
-                        <td>{empUser.serviceArea}</td>
-                        <td>{empUser.empAddress}</td>
-                        <td>{empUser.destributionCenter}</td>
-                        <td>{empUser.empGender}</td>
-                        <td>{empUser.empDOB}</td>
-                        <td>{empUser.empNic}</td>
                         <td>{empUser.empType}</td>
-                        <td>{empUser.empHealthIssues}</td>
                         <td>
                           <button
                             type="button"
@@ -184,7 +191,7 @@ function UpdateUser() {
         aria-labelledby="staticBackdropLabel"
         aria-hidden="true"
       >
-       
+
         <div class="modal-dialog modal-xl">
           <div class="modal-content" id="modal__Update">
             <div class="modal-body">
@@ -430,6 +437,7 @@ function UpdateUser() {
                     class="btn btn-primary"
                     id="btn__UpdateUpdate"
                     name="saveEmployee"
+                    data-bs-dismiss="modal"
                     disabled={currentId ? false : true}
                   >
                     Update Details

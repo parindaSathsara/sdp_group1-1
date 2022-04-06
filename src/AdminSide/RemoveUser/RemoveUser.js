@@ -2,11 +2,12 @@ import React, { useEffect, useState } from "react";
 import {
   collection,
   deleteDoc,
-  
+  deleteField,
   doc,
-  
+  documentId,
+  getDoc,
   getDocs,
-  
+  updateDoc,
 } from "firebase/firestore";
 import fireDb from "../../firebase";
 import { deleteUser } from "firebase/auth";
@@ -46,9 +47,9 @@ function RemoveUser() {
               </h4>
             </div>
 
-            <div className="updateuser__Table">
-              <table className="table">
-                <thead className="table-dark">
+            <div className="table-responsive">
+              <table className="table table-bordered" id="dataTable">
+                <thead>
                   <tr>
                     <th>E-ID</th>
                     <th>Employee Name</th>
